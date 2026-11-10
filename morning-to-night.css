@@ -6,16 +6,17 @@ h1,h2,.clock{font-family:"Anton","Montserrat",sans-serif;font-weight:400}
 .daybar{position:sticky;top:0;z-index:20;background:var(--warm);box-shadow:0 1px 0 rgba(16,17,18,.1)}
 .bar-in{display:flex;align-items:center;gap:28px;min-height:68px}
 .daybar .logo img{width:96px;height:auto}
-.dayline{position:relative;flex:1;height:44px;min-width:0;cursor:pointer}
-.track{position:absolute;left:0;right:0;top:15px;height:2px;border-radius:2px;background:#D9D6D0}
-.fill{position:absolute;left:0;top:0;bottom:0;width:var(--x,3.2%);border-radius:2px;background:var(--ink);transition:width .35s ease}
-.hour{position:absolute;top:27px;transform:translateX(-50%);font-size:10px;color:var(--secondary);white-space:nowrap}
-.tick{position:absolute;top:4px;width:14px;height:24px;margin-left:-7px}
-.tick::before{content:"";position:absolute;left:6px;top:5px;width:2px;height:14px;border-radius:2px;background:#B9B5AE;transition:background-color .2s ease,transform .2s ease}
-.tick.past::before{background:var(--ink)}
-.tick:hover::before{transform:scaleY(1.4)}
-.sun{position:absolute;top:8px;left:var(--x,3.2%);width:16px;height:16px;margin-left:-8px;box-shadow:0 0 0 3px var(--warm);transition:left .35s ease;pointer-events:none}
-.now{min-width:5.2em;font-size:13px;text-align:right}
+.dayline{position:relative;flex:1;height:48px;min-width:0;cursor:pointer}
+/* Bubble track: a fat rounded track that fills with the logo colours as the day goes by. */
+.track{position:absolute;left:0;right:0;top:19px;height:14px;border-radius:99px;background:#ECE8E2}
+.fill{position:absolute;left:0;top:0;bottom:0;width:var(--x,3.2%);min-width:14px;border-radius:99px;background:var(--dot);transition:width .35s ease}
+.mark{position:absolute;top:-7px;width:24px;height:auto;margin-left:-12px;pointer-events:none}
+.tick{position:absolute;top:12px;width:14px;height:28px;margin-left:-7px}
+.tick::before{content:"";position:absolute;left:3px;top:10px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px rgba(16,17,18,.26);transition:transform .25s cubic-bezier(.34,1.7,.5,1)}
+.tick.past::before{box-shadow:none}
+.tick:hover::before{transform:scale(1.5)}
+.sun{position:absolute;top:10px;left:var(--x,3.2%);width:32px;height:32px;margin-left:-16px;box-shadow:0 0 0 4px var(--warm),0 4px 10px rgba(250,62,114,.3);transition:left .35s ease;pointer-events:none}
+.now{flex:none;min-width:5.6em;padding:8px 14px;border-radius:999px;background:var(--ink);color:#fff;font-family:"Montserrat",sans-serif;font-weight:700;font-size:14px;line-height:1.2;text-align:center;white-space:nowrap}
 
 .chapter{position:relative;margin-top:-1px;background:linear-gradient(to bottom,var(--from,var(--c)) 0,var(--c) 240px);padding:104px 0 88px}
 .dawn{--c:#FFE3D3;padding-top:40px}
@@ -184,9 +185,9 @@ h1 .bunch{display:inline-flex;vertical-align:baseline;--e:.46em;margin-left:.06e
   .bar-in{flex-wrap:wrap;gap:0 12px;min-height:0;padding-top:10px;padding-bottom:2px}
   .daybar .logo img{width:84px}
   .daybar .cta{margin-left:auto;min-height:40px;padding:0 16px;font-size:14px}
-  .dayline{flex:1 1 60%;order:5;height:40px}
-  .now{order:6;min-width:4.6em;padding-bottom:10px}
-  .hour{font-size:9px}
+  .dayline{flex:1 1 60%;order:5;height:46px;margin-top:4px}
+  .mark{width:20px;margin-left:-10px;top:-5px}
+  .now{order:6;min-width:5.2em;padding:6px 10px;font-size:12px;margin-bottom:2px}
   .chapter{padding:88px 0 64px}
   .dawn{padding-top:24px}
   .dusk{padding-top:150px;padding-bottom:230px}
