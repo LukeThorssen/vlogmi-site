@@ -76,6 +76,7 @@
   // The walk strip holds six posts side by side, so they all sit at the same height on the page.
   // As the strip passes up the screen the timeline steps through them one at a time, and the strip
   // slides sideways to keep the current one in view. Scrolling the strip by hand also moves the dot.
+  var countUp = function () {}; // set further down, once the timeline is ready
   var filmEntries = entries.filter(function (entry) { return entry.closest('.film'); });
   var filmFirst = entries.indexOf(filmEntries[0]), filmIndex = 0, filmStep = -1, sliding = 0;
   function stripLeft(entry) {
@@ -106,6 +107,7 @@
     });
     if (i === current) return;
     current = i;
+    if (i >= filmFirst && i < filmFirst + filmEntries.length) countUp(i);
     line.style.setProperty('--x', ticks[i].style.left);
     now.textContent = posts[i].time;
     ticks.forEach(function (tick, n) { tick.classList.toggle('past', n <= i); if (n === i) tick.setAttribute('aria-current', 'true'); else tick.removeAttribute('aria-current'); });
@@ -148,29 +150,42 @@
   });
   update();
 
-  // Each post's big time counts up from the previous post's time when it first comes into view,
-  // like a clock running forward to that moment. It runs once per post and is skipped with reduced motion.
+  // Each post's big time counts up from the previous post's time, like a clock running forward to
+  // that moment. It happens when the time reaches the middle band of the screen, not when it first
+  // peeks in at the bottom, so on a tall monitor they go one after another as you scroll. In the walk
+  // strip each time counts as the timeline steps onto its post. Once per post; skipped with reduced motion.
+  var counted = {};
+  function face(minutes) { var h = Math.floor(minutes / 60), m = Math.round(minutes % 60); if (m === 60) { h += 1; m = 0; } return [((h + 11) % 12 + 1) + ':' + (m < 10 ? '0' : '') + m, h % 24 < 12 ? 'am' : 'pm']; }
+  countUp = function (n, wait) {
+    if (calm || counted[n]) return;
+    counted[n] = true;
+    var to = posts[n].minutes, from = n ? posts[n - 1].minutes : to - 31;
+    var clock = entries[n].querySelector('.clock'), mer = entries[n].querySelector('.mer');
+    var length = Math.min(1100, 420 + (to - from) * 2.2), began = null;
+    clock.textContent = face(from)[0]; mer.textContent = face(from)[1];
+    var tick = function (t) {
+      if (began === null) began = t;
+      var p = Math.min(1, (t - began) / length), eased = 1 - Math.pow(1 - p, 3), shown = face(from + (to - from) * eased);
+      clock.textContent = p === 1 ? posts[n].clock : shown[0];
+      mer.textContent = p === 1 ? posts[n].mer : shown[1];
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    setTimeout(function () { requestAnimationFrame(tick); }, wait || 0);
+  };
   if (!calm && 'IntersectionObserver' in window) {
-    var face = function (minutes) { var h = Math.floor(minutes / 60), m = Math.round(minutes % 60); if (m === 60) { h += 1; m = 0; } return [((h + 11) % 12 + 1) + ':' + (m < 10 ? '0' : '') + m, h % 24 < 12 ? 'am' : 'pm']; };
+    // The band runs from 18% to 62% of the way down the screen.
     var counting = new IntersectionObserver(function (seen) {
       seen.forEach(function (item) {
         if (!item.isIntersecting) return;
         counting.unobserve(item.target);
-        var n = entries.indexOf(item.target), to = posts[n].minutes, from = n ? posts[n - 1].minutes : to - 31;
-        var clock = item.target.querySelector('.clock'), mer = item.target.querySelector('.mer');
-        var length = Math.min(1100, 420 + (to - from) * 2.2), began = null;
-        clock.textContent = face(from)[0]; mer.textContent = face(from)[1];
-        var tick = function (t) {
-          if (began === null) began = t;
-          var p = Math.min(1, (t - began) / length), eased = 1 - Math.pow(1 - p, 3), shown = face(from + (to - from) * eased);
-          clock.textContent = p === 1 ? posts[n].clock : shown[0];
-          mer.textContent = p === 1 ? posts[n].mer : shown[1];
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        // Posts that appear together start a beat apart so they do not all tick at once.
-        setTimeout(function () { requestAnimationFrame(tick); }, 140 * (item.target.previousElementSibling && item.target.previousElementSibling.classList.contains('entry') ? 1 : 0));
+        var entry = item.target.closest('.entry'), previous = entry.previousElementSibling;
+        // Two posts side by side start a beat apart.
+        countUp(entries.indexOf(entry), previous && previous.classList.contains('entry') ? 160 : 0);
       });
-    }, { threshold: 0.35 });
-    entries.forEach(function (entry) { counting.observe(entry); });
+    }, { rootMargin: '-18% 0px -38% 0px', threshold: 0.5 });
+    entries.forEach(function (entry, n) { if (n < filmFirst || n >= filmFirst + filmEntries.length) counting.observe(entry.querySelector('.time')); });
+    // The first two are on screen when the page opens, wherever they sit on a very tall monitor.
+    countUp(0); countUp(1, 160);
+    if (current >= filmFirst && current < filmFirst + filmEntries.length) countUp(current);
   }
 })();
