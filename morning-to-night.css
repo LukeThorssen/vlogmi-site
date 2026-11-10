@@ -1,0 +1,231 @@
+/* Morning to Night: one real day, top to bottom. Each part of the day gets its own layout and sky. */
+body{background:#101112}
+h1,h2,.clock{font-family:"Anton","Montserrat",sans-serif;font-weight:400}
+
+/* The day bar: a timeline of the day with a tick at each post. The logo's dot marks where you are. */
+.daybar{position:sticky;top:0;z-index:20;background:var(--warm);box-shadow:0 1px 0 rgba(16,17,18,.1)}
+.bar-in{display:flex;align-items:center;gap:28px;min-height:68px}
+.daybar .logo img{width:96px;height:auto}
+.dayline{position:relative;flex:1;height:44px;min-width:0;cursor:pointer}
+.track{position:absolute;left:0;right:0;top:15px;height:2px;border-radius:2px;background:#D9D6D0}
+.fill{position:absolute;left:0;top:0;bottom:0;width:var(--x,3.2%);border-radius:2px;background:var(--ink);transition:width .35s ease}
+.hour{position:absolute;top:27px;transform:translateX(-50%);font-size:10px;color:var(--secondary);white-space:nowrap}
+.tick{position:absolute;top:4px;width:14px;height:24px;margin-left:-7px}
+.tick::before{content:"";position:absolute;left:6px;top:5px;width:2px;height:14px;border-radius:2px;background:#B9B5AE;transition:background-color .2s ease,transform .2s ease}
+.tick.past::before{background:var(--ink)}
+.tick:hover::before{transform:scaleY(1.4)}
+.sun{position:absolute;top:8px;left:var(--x,3.2%);width:16px;height:16px;margin-left:-8px;box-shadow:0 0 0 3px var(--warm);transition:left .35s ease;pointer-events:none}
+.now{min-width:5.2em;font-size:13px;text-align:right}
+
+.chapter{position:relative;margin-top:-1px;background:linear-gradient(to bottom,var(--from,var(--c)) 0,var(--c) 240px);padding:104px 0 88px}
+.dawn{--c:#FFE3D3;padding-top:40px}
+.walk{--from:#FFE3D3;--c:#DCEBF9}
+.noon{--from:#DCEBF9;--c:#FAF9F7}
+.after{--from:#FAF9F7;--c:#EDF0F3}
+.night{--c:#101112;color:#fff;padding-top:72px;padding-bottom:0}
+
+/* Sunset. The sky is drawn from the colours in the two posts, and the logo's dot is the sun:
+   it sinks behind the horizon as you scroll, and the page is dark by the time it has set. */
+.dusk{background:none;padding-top:150px;padding-bottom:290px;overflow:hidden;isolation:isolate}
+.sky{position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,#EDF0F3 0,#F4E7E0 15%,#FBDDC8 36%,#F9BFA9 60%,#EC98A0 80%,#B87BA6 100%)}
+.setting-sun{position:absolute;left:max(4vw,calc(50% - 600px));top:0;width:clamp(200px,24vw,340px);aspect-ratio:1;border-radius:50%;background:var(--dot);transform:translateY(calc(var(--set,.45) * (var(--fall,900px))));will-change:transform}
+.land{position:absolute;left:-10%;right:-10%;bottom:0;height:210px;border-radius:50% 50% 0 0/70px 70px 0 0;background:linear-gradient(to bottom,#2A2C52 0,#16172A 55%,#101112 100%)}
+.night::before{content:"";position:absolute;inset:0 0 auto 0;height:420px;pointer-events:none;opacity:.7;background-image:radial-gradient(circle,#fff 0 1px,transparent 1.6px),radial-gradient(circle,#fff 0 1px,transparent 1.6px),radial-gradient(circle,#C9CCFF 0 1.4px,transparent 2px);background-size:233px 187px,317px 251px,409px 331px;background-position:40px 30px,150px 110px,260px 60px;-webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent);mask-image:linear-gradient(to bottom,#000 30%,transparent)}
+
+.entry{position:relative;flex:none;width:var(--w,300px);scroll-margin-top:110px}
+/* A custom emoji pinned to the corner of a few posts. */
+.pin{position:absolute;right:-22px;bottom:-22px;width:calc(var(--w,300px) * .24);min-width:48px;max-width:84px;height:auto;transform:rotate(9deg);filter:drop-shadow(0 4px 8px rgba(16,17,18,.18))}
+.time{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.clock{font-size:var(--clock,120px);line-height:.86;letter-spacing:-.01em}
+.mer{font-size:15px}
+.frame{touch-action:manipulation;position:relative;display:block;width:100%;border-radius:16px;overflow:hidden;background:rgba(16,17,18,.12)}
+.frame img,.frame video{width:100%;aspect-ratio:9/16;object-fit:cover}
+.frame video{position:absolute;inset:0;height:100%}
+.frame img{transition:transform .3s ease}
+.frame:hover img,.frame:hover video{transform:scale(1.02)}
+
+/* Emoji bunches: three of the app's emoji overlapping, in the open space beside the words. */
+.bunch{display:flex;align-items:flex-end;flex:none;--e:52px}
+.bunch img,.trail img,.pin{transition:scale .4s cubic-bezier(.34,1.7,.5,1)}
+.bunch img:hover,.trail img:hover,.pin:hover{scale:1.3}
+.bunch img{width:var(--e);height:auto;filter:drop-shadow(0 4px 8px rgba(16,17,18,.14))}
+.bunch img:nth-child(1){transform:rotate(-10deg)}
+.bunch img:nth-child(2){width:calc(var(--e) * 1.22);margin:0 calc(var(--e) * -.16) calc(var(--e) * .3);transform:rotate(5deg);z-index:1}
+.bunch img:nth-child(3){transform:rotate(12deg)}
+.aside .bunch{--e:74px;margin:0 0 18px -6px}
+.lead .bunch{--e:70px;margin:0 8px 4px}
+h1 .bunch{display:inline-flex;vertical-align:baseline;--e:.46em;margin-left:.06em}
+/* "Let people follow along": reactions drifting from the words towards the post. */
+.trail{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.trail img{width:44px;height:auto;filter:drop-shadow(0 4px 8px rgba(16,17,18,.14))}
+.trail img:nth-child(odd){transform:rotate(-8deg)}
+.trail img:nth-child(even){transform:rotate(9deg) translateY(-6px)}
+@media (min-width:1240px){
+  /* On wide screens the reactions scatter around the words: above, below and beside them. */
+  .after .row{position:relative}
+  .trail{position:absolute;inset:-56px 388px -56px 0;display:block;margin:0;pointer-events:none}
+  .trail img{position:absolute;pointer-events:auto}
+  .trail img:nth-child(1){left:3%;top:5%;width:56px}
+  .trail img:nth-child(2){left:30%;top:1%;width:76px}
+  .trail img:nth-child(3){left:61%;top:9%;width:60px}
+  .trail img:nth-child(4){left:69%;top:39%;width:88px}
+  .trail img:nth-child(5){left:89%;top:22%;width:54px}
+  .trail img:nth-child(6){left:55%;top:68%;width:64px}
+  .trail img:nth-child(7){left:7%;top:80%;width:70px}
+  .trail img:nth-child(8){left:85%;top:73%;width:50px}
+  .trail img:nth-child(9){left:33%;top:87%;width:78px}
+}
+
+.hero{display:flex;align-items:center;justify-content:space-between;gap:48px}
+.pitch{position:relative;flex:1;min-width:0;max-width:560px}
+.date{display:flex;align-items:center;gap:12px;font-size:15px}
+.pitch h1{margin-top:14px;font-size:clamp(60px,7.4vw,106px);line-height:.98;letter-spacing:-.005em}
+.lede{margin-top:24px;font-size:20px;line-height:1.5;max-width:25em}
+.acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.duo{display:flex;align-items:flex-start;gap:28px}
+.duo .entry:first-child{--w:330px;--clock:150px}
+.duo .entry:last-child{--w:240px;--clock:96px;margin-top:150px}
+
+.lead{display:flex;align-items:flex-end;gap:24px 48px;margin-bottom:40px}
+.lead h2,.aside h2{font-size:clamp(36px,4.2vw,60px);line-height:1.04;text-wrap:balance}
+.lead p{font-size:19px;max-width:22em;padding-bottom:6px}
+.arrows{display:flex;gap:8px;margin-left:auto}
+.arrows button{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--ink);color:#fff}
+.arrows svg{width:18px;height:18px}
+.film{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:0 max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter))) 32px;scroll-padding-left:max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter)))}
+.film::-webkit-scrollbar{display:none}
+.film .entry{--w:250px;--clock:80px;scroll-snap-align:start}
+.film .entry:nth-child(even){margin-top:56px}
+
+.row{display:flex;align-items:center;gap:48px}
+.row.end{justify-content:flex-end}
+.aside{flex:1 1 0;min-width:0;max-width:460px}
+.aside p{margin-top:16px;font-size:19px;line-height:1.5;max-width:23em}
+.noon .entry:nth-child(2){margin-top:110px;margin-left:-16px}
+.after .entry{--w:340px;--clock:132px}
+.after .row{justify-content:space-between}
+.dusk .entry:nth-child(2){--w:360px;--clock:140px}
+.dusk .entry:nth-child(3){--w:250px;--clock:96px;margin-top:220px;margin-left:-20px}
+.dusk .aside h2{font-size:clamp(42px,4.8vw,70px)}
+.night .row{align-items:flex-end}
+.night .entry:nth-child(1){--w:240px;--clock:92px;margin-bottom:96px}
+.night .entry:nth-child(2){--w:330px;--clock:132px;margin-left:-20px}
+.night .aside{align-self:center;max-width:480px;padding-left:24px}
+.night .aside h2{font-size:clamp(44px,5.2vw,76px)}
+.night .aside p{color:#B7B8BC}
+.night .acts{margin-top:28px}
+.night .foot{margin-top:0;color:#B7B8BC;border-top:1px solid #2A2B30}
+.night .foot nav,.night .foot .other a{color:#fff}
+
+/* Double-tap a post and a heart pops where you tapped, as in the app. */
+.like{position:absolute;z-index:3;width:104px;height:auto;margin:-52px 0 0 -52px;pointer-events:none;animation:like .85s ease-out forwards;filter:drop-shadow(0 6px 14px rgba(16,17,18,.3))}
+@keyframes like{0%{transform:scale(.2) rotate(-14deg);opacity:0}22%{transform:scale(1.25) rotate(-8deg);opacity:1}40%{transform:scale(1) rotate(-8deg)}75%{opacity:1}100%{transform:translateY(-46px) scale(1.05) rotate(-8deg);opacity:0}}
+
+/* How it works, and why the camera rule matters. */
+.how{padding-top:136px}
+.how-top{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:56px;align-items:end}
+.how-top h2{font-size:clamp(40px,5vw,76px);line-height:1.02;text-wrap:balance}
+.how-say{display:grid;gap:14px;font-size:19px;line-height:1.5;color:#D4D4D7;padding-bottom:8px}
+.versus{margin:64px 0 0;border-top:1px solid #3A3B42}
+.versus>div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,1.2fr);gap:32px;padding:22px 0;border-bottom:1px solid #2A2B30;align-items:center}
+.versus-head span{font-family:"Space Mono",monospace;font-size:13px;color:#8E8F96}
+.versus-head span:last-child{color:#fff}
+.versus dt{font-weight:600;font-size:17px;color:#fff}
+.versus dd{margin:0;font-size:18px;color:#8E8F96}
+.versus dd.us{display:flex;align-items:center;gap:12px;color:#fff;font-weight:600}
+.versus dd.us .dot{width:12px;height:12px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;margin-top:88px;counter-reset:step}
+.steps li{counter-increment:step}
+.steps h3{margin-top:22px;font-family:"Anton","Montserrat",sans-serif;font-weight:400;font-size:30px;line-height:1.1}
+.steps h3::before{content:counter(step);display:inline-block;margin-right:12px;font-family:"Space Mono",monospace;font-size:14px;vertical-align:middle;color:#8E8F96}
+.steps p{margin-top:10px;font-size:17px;line-height:1.5;color:#B7B8BC;max-width:22em}
+.pic{position:relative;height:210px;border-radius:20px;background:#1C1D21;overflow:hidden;display:grid;place-items:center}
+.pic.shutter span{width:104px;aspect-ratio:1;border-radius:50%;background:var(--dot);box-shadow:0 0 0 7px #1C1D21,0 0 0 12px #fff}
+.pic.bars{grid-template-columns:repeat(5,1fr);gap:5px;padding:14px 16px 0;align-items:start}
+.pic.bars i{height:4px;border-radius:4px;background:rgba(255,255,255,.3);position:relative;z-index:1}
+.pic.bars i:nth-child(-n+3){background:#fff}
+.pic.bars img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9}
+.pic.bars::after{content:"";position:absolute;inset:0 0 60% 0;background:linear-gradient(to bottom,rgba(16,17,18,.55),transparent)}
+.pic.mini{grid-template-columns:repeat(7,1fr);gap:4px;padding:16px 22px;align-content:center}
+.pic.mini img,.pic.mini b{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px}
+.pic.mini b{background:#26272C}
+.pic.mini img.on{outline:2px solid #fff;outline-offset:2px;position:relative;z-index:1}
+.closing{padding-top:136px;padding-bottom:120px;display:grid;gap:32px;justify-items:start}
+.closing h2{font-size:clamp(48px,7vw,112px);line-height:1}
+.toast{position:fixed;z-index:40;left:50%;bottom:28px;transform:translateX(-50%);margin:0;padding:14px 22px;border-radius:999px;background:#fff;color:var(--ink);font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(16,17,18,.28);white-space:nowrap}
+
+@media (max-width:1180px){
+  .hero{flex-direction:column;align-items:flex-start}
+}
+/* Portrait monitors, half-width windows and tablets: words first, then the posts, kept together. */
+@media (max-width:1020px){
+  .row{flex-wrap:wrap}
+  .aside{flex:0 0 100%;max-width:none}
+  .aside h2,.aside p{max-width:560px}
+  .night .aside{padding-left:0}
+  .lead{flex-wrap:wrap;gap:16px 28px}
+  .lead h2{flex:1 1 100%}
+  .lead p{flex:1 1 0;min-width:0}
+  .lead .bunch{--e:54px;margin:0}
+  .after .aside,.dusk .aside,.noon .aside{order:-1}
+  .chapter{padding:84px 0 64px}
+  .dawn{padding-top:32px}
+  .dusk{padding-top:130px;padding-bottom:270px}
+  .night{padding-top:64px;padding-bottom:0}
+  .row{gap:28px 32px}
+  .noon .entry:nth-child(2){margin-top:64px}
+  .after .entry{margin-left:auto}
+  .after .aside{flex:1 1 320px}
+  .dusk .entry:nth-child(3){margin-top:150px}
+  .how-top{grid-template-columns:1fr;gap:24px}
+  .how{padding-top:104px}
+}
+@media (max-width:720px){
+  .bar-in{flex-wrap:wrap;gap:0 12px;min-height:0;padding-top:10px;padding-bottom:2px}
+  .daybar .logo img{width:84px}
+  .daybar .cta{margin-left:auto;min-height:40px;padding:0 16px;font-size:14px}
+  .dayline{flex:1 1 60%;order:5;height:40px}
+  .now{order:6;min-width:4.6em;padding-bottom:10px}
+  .hour{font-size:9px}
+  .chapter{padding:88px 0 64px}
+  .dawn{padding-top:24px}
+  .dusk{padding-top:150px;padding-bottom:230px}
+  .land{height:150px;border-radius:50% 50% 0 0/36px 36px 0 0}
+  .night{padding-top:72px;padding-bottom:0}
+  .pin{right:-8px;bottom:-14px}
+  .pitch h1{font-size:68px}
+  .lede{font-size:18px}
+  .duo{gap:14px;width:100%}
+  .duo .entry:first-child{--w:56%;--clock:84px}
+  .duo .entry:last-child{--w:40%;--clock:58px;margin-top:96px}
+  .lead{flex-wrap:wrap;margin-bottom:28px}
+  .lead p{font-size:17px}
+  .arrows{display:none}
+  .film{gap:12px}
+  .film .entry{--w:58vw;--clock:64px}
+  .film .entry:nth-child(even){margin-top:36px}
+  .row{gap:28px 12px}
+  .noon .entry{--w:calc(50% - 6px);--clock:58px}
+  .noon .entry:nth-child(2){margin:64px 0 0}
+  .after .entry{--w:74%;--clock:92px;margin-left:auto}
+  .dusk .entry:nth-child(2){--w:56%;--clock:78px}
+  .dusk .entry:nth-child(3){--w:calc(44% - 12px);--clock:58px;margin:110px 0 0}
+  .night .entry:nth-child(1){--w:calc(42% - 12px);--clock:54px;margin-bottom:56px}
+  .night .entry:nth-child(2){--w:58%;--clock:80px;margin-left:0}
+  .aside h2,.lead h2{font-size:38px}
+  .aside .bunch{--e:50px;margin:0 0 10px}
+  .lead .bunch{--e:46px;order:-1;flex-basis:100%}
+  .lead p{flex-basis:100%}
+  .dusk .aside h2,.night .aside h2{font-size:46px}
+  .aside p{font-size:17px}
+  .mer{font-size:12px}
+  .versus>div{grid-template-columns:1fr 1fr;gap:6px 16px;padding:18px 0}
+  .versus dt{grid-column:1/-1}
+  .versus-head span:first-child{display:none}
+  .versus dd{font-size:15px}
+  .steps{grid-template-columns:1fr;gap:44px;margin-top:64px}
+  .pic{height:190px}
+  .how{padding-top:88px}
+  .closing{padding-top:96px;padding-bottom:88px}
+  .toast{bottom:18px}
+}
