@@ -40,7 +40,7 @@ h1,h2,.clock{font-family:"Anton","Montserrat",sans-serif;font-weight:400}
 /* A custom emoji pinned to the corner of a few posts. */
 .pin{position:absolute;right:-22px;bottom:-22px;width:calc(var(--w,300px) * .24);min-width:48px;max-width:84px;height:auto;transform:rotate(9deg);filter:drop-shadow(0 4px 8px rgba(16,17,18,.18))}
 .time{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
-.clock{font-size:var(--clock,120px);line-height:.86;letter-spacing:-.01em}
+.clock{font-variant-numeric:tabular-nums;font-size:var(--clock,120px);line-height:.86;letter-spacing:-.01em}
 .mer{font-size:15px}
 .frame{touch-action:manipulation;position:relative;display:block;width:100%;border-radius:16px;overflow:hidden;background:rgba(16,17,18,.12)}
 .frame img,.frame video{width:100%;aspect-ratio:9/16;object-fit:cover}

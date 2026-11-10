@@ -147,4 +147,30 @@
     window.scrollTo({ top: window.scrollY + box.top + box.height / 2 - (window.innerHeight + bar.offsetHeight) / 2, behavior: behavior });
   });
   update();
+
+  // Each post's big time counts up from the previous post's time when it first comes into view,
+  // like a clock running forward to that moment. It runs once per post and is skipped with reduced motion.
+  if (!calm && 'IntersectionObserver' in window) {
+    var face = function (minutes) { var h = Math.floor(minutes / 60), m = Math.round(minutes % 60); if (m === 60) { h += 1; m = 0; } return [((h + 11) % 12 + 1) + ':' + (m < 10 ? '0' : '') + m, h % 24 < 12 ? 'am' : 'pm']; };
+    var counting = new IntersectionObserver(function (seen) {
+      seen.forEach(function (item) {
+        if (!item.isIntersecting) return;
+        counting.unobserve(item.target);
+        var n = entries.indexOf(item.target), to = posts[n].minutes, from = n ? posts[n - 1].minutes : to - 31;
+        var clock = item.target.querySelector('.clock'), mer = item.target.querySelector('.mer');
+        var length = Math.min(1100, 420 + (to - from) * 2.2), began = null;
+        clock.textContent = face(from)[0]; mer.textContent = face(from)[1];
+        var tick = function (t) {
+          if (began === null) began = t;
+          var p = Math.min(1, (t - began) / length), eased = 1 - Math.pow(1 - p, 3), shown = face(from + (to - from) * eased);
+          clock.textContent = p === 1 ? posts[n].clock : shown[0];
+          mer.textContent = p === 1 ? posts[n].mer : shown[1];
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        // Posts that appear together start a beat apart so they do not all tick at once.
+        setTimeout(function () { requestAnimationFrame(tick); }, 140 * (item.target.previousElementSibling && item.target.previousElementSibling.classList.contains('entry') ? 1 : 0));
+      });
+    }, { threshold: 0.35 });
+    entries.forEach(function (entry) { counting.observe(entry); });
+  }
 })();
