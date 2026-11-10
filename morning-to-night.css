@@ -42,7 +42,7 @@ h1,h2,.clock{font-family:"Anton","Montserrat",sans-serif;font-weight:400}
 .frame img,.frame video{width:100%;aspect-ratio:9/16;object-fit:cover}
 .frame video{position:absolute;inset:0;height:100%}
 .frame img{transition:transform .3s ease}
-.frame:hover img,.frame:hover video{transform:scale(1.02)}
+.frame:hover img:not(.like),.frame:hover video{transform:scale(1.02)}
 
 /* Emoji bunches: three of the app's emoji overlapping, in the open space beside the words. */
 .bunch{display:flex;align-items:flex-end;flex:none;--e:52px}
@@ -65,15 +65,15 @@ h1 .bunch{display:inline-flex;vertical-align:baseline;--e:.46em;margin-left:.06e
   .after .row{position:relative}
   .trail{position:absolute;inset:-56px 388px -56px 0;display:block;margin:0;pointer-events:none}
   .trail img{position:absolute;pointer-events:auto}
-  .trail img:nth-child(1){left:3%;top:5%;width:56px}
-  .trail img:nth-child(2){left:30%;top:1%;width:76px}
-  .trail img:nth-child(3){left:61%;top:9%;width:60px}
-  .trail img:nth-child(4){left:69%;top:39%;width:88px}
-  .trail img:nth-child(5){left:89%;top:22%;width:54px}
-  .trail img:nth-child(6){left:55%;top:68%;width:64px}
-  .trail img:nth-child(7){left:7%;top:80%;width:70px}
-  .trail img:nth-child(8){left:85%;top:73%;width:50px}
-  .trail img:nth-child(9){left:33%;top:87%;width:78px}
+  .trail img:nth-child(1){left:5%;top:15%;width:50px;transform:rotate(-14deg)}
+  .trail img:nth-child(2){left:31%;top:-2%;width:80px;transform:rotate(7deg)}
+  .trail img:nth-child(3){left:63%;top:21%;width:56px;transform:rotate(-6deg)}
+  .trail img:nth-child(4){left:74%;top:46%;width:92px;transform:rotate(10deg)}
+  .trail img:nth-child(5){left:95%;top:4%;width:48px;transform:rotate(-4deg)}
+  .trail img:nth-child(6){left:58%;top:63%;width:60px;transform:rotate(-11deg)}
+  .trail img:nth-child(7){left:15%;top:69%;width:74px;transform:rotate(8deg)}
+  .trail img:nth-child(8){left:80%;top:86%;width:44px;transform:rotate(16deg)}
+  .trail img:nth-child(9){left:41%;top:93%;width:82px;transform:rotate(-7deg)}
 }
 
 .hero{display:flex;align-items:center;justify-content:space-between;gap:48px}
@@ -92,7 +92,7 @@ h1 .bunch{display:inline-flex;vertical-align:baseline;--e:.46em;margin-left:.06e
 .arrows{display:flex;gap:8px;margin-left:auto}
 .arrows button{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--ink);color:#fff}
 .arrows svg{width:18px;height:18px}
-.film{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:0 max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter))) 32px;scroll-padding-left:max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter)))}
+.film{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:28px max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter))) 32px;scroll-padding-left:max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter)));margin-top:-28px}
 .film::-webkit-scrollbar{display:none}
 .film .entry{--w:250px;--clock:80px;scroll-snap-align:start}
 .film .entry:nth-child(even){margin-top:56px}
@@ -118,7 +118,7 @@ h1 .bunch{display:inline-flex;vertical-align:baseline;--e:.46em;margin-left:.06e
 .night .foot nav,.night .foot .other a{color:#fff}
 
 /* Double-tap a post and a heart pops where you tapped, as in the app. */
-.like{position:absolute;z-index:3;width:104px;height:auto;margin:-52px 0 0 -52px;pointer-events:none;animation:like .85s ease-out forwards;filter:drop-shadow(0 6px 14px rgba(16,17,18,.3))}
+.frame .like{position:absolute;z-index:3;width:84px;height:84px;aspect-ratio:auto;object-fit:contain;margin:-42px 0 0 -42px;transition:none;pointer-events:none;animation:like .85s ease-out forwards;filter:drop-shadow(0 6px 14px rgba(16,17,18,.3))}
 @keyframes like{0%{transform:scale(.2) rotate(-14deg);opacity:0}22%{transform:scale(1.25) rotate(-8deg);opacity:1}40%{transform:scale(1) rotate(-8deg)}75%{opacity:1}100%{transform:translateY(-46px) scale(1.05) rotate(-8deg);opacity:0}}
 
 /* How it works, and why the camera rule matters. */
