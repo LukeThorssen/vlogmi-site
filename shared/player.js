@@ -1,13 +1,14 @@
 // The day player. VlogPlayer.open({title, items, start}) plays a day's posts in order, the way the
 // app plays a daily vlog: bars along the top, tap right for next, tap left for back, hold to pause.
 (function () {
-  var dialog, state = null, stillMs = 4000;
+  var dialog, state = null, stillMs = 4000, sound = true;
   var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
   function build() {
     dialog = el('<dialog class="vp" aria-label="Day player"><div class="vp-stage">' +
       '<div class="vp-media"></div><div class="vp-bars"></div>' +
       '<div class="vp-head"><span class="dot"></span><div class="vp-who"><b></b><span class="mono" aria-live="polite"></span></div>' +
+      '<button class="vp-sound" type="button" aria-label="Sound" aria-pressed="true"><svg class="on" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h3l4-3.5v12l-4-3.5H3z" fill="currentColor"/><path d="M13.5 7a4 4 0 010 6M15.8 4.6a7.5 7.5 0 010 10.8"/></svg><svg class="off" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h3l4-3.5v12l-4-3.5H3z" fill="currentColor"/><path d="M13.5 7.5l5 5M18.5 7.5l-5 5"/></svg></button>' +
       '<button class="vp-close" type="button" aria-label="Close player"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 4l12 12M16 4L4 16"/></svg></button></div>' +
       '<button class="vp-prev" type="button" aria-label="Previous post"></button><button class="vp-next" type="button" aria-label="Next post"></button>' +
       '<span class="vp-kind mono" hidden></span><p class="vp-hint mono">Tap right for next · hold to pause</p>' +
@@ -16,6 +17,7 @@
     document.body.appendChild(dialog);
     var q = function (s) { return dialog.querySelector(s); };
     q('.vp-close').addEventListener('click', function () { dialog.close(); });
+    q('.vp-sound').addEventListener('click', function () { setSound(!sound); });
     q('.vp-next').addEventListener('click', function () { if (!state.held) go(state.i + 1); });
     q('.vp-prev').addEventListener('click', function () { if (!state.held) go(Math.max(0, state.i - 1)); });
     q('.vp-again').addEventListener('click', function () { go(0); });
@@ -30,7 +32,7 @@
     // Hold to pause, as in the app.
     var timer;
     q('.vp-stage').addEventListener('pointerdown', function (e) {
-      if (e.target.closest('.vp-close,.vp-end')) return;
+      if (e.target.closest('.vp-close,.vp-sound,.vp-end')) return;
       state.held = false;
       timer = setTimeout(function () { state.held = true; pause(true); }, 220);
     });
@@ -38,6 +40,15 @@
       q('.vp-stage').addEventListener(type, function () { clearTimeout(timer); if (state && state.held) { pause(false); setTimeout(function () { if (state) state.held = false; }, 0); } });
     });
     document.addEventListener('visibilitychange', function () { if (state && dialog.open) pause(document.hidden); });
+  }
+  // Sound belongs to the player only: it is on when a day is opened, can be switched off here, and
+  // stops when the player closes. Clips on the page itself are always silent.
+  function setSound(on) {
+    sound = on;
+    var button = dialog.querySelector('.vp-sound'), video = dialog.querySelector('video');
+    button.setAttribute('aria-pressed', String(on));
+    button.setAttribute('aria-label', on ? 'Sound on. Switch sound off' : 'Sound off. Switch sound on');
+    if (video) video.muted = !on;
   }
   function stop() {
     if (!state) return;
@@ -82,11 +93,12 @@
     var bar = bars[i].firstChild;
     if (item.clip) {
       var video = document.createElement('video');
-      video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'auto'; video.poster = item.src; video.src = item.clip;
+      video.muted = !sound; video.loop = true; video.playsInline = true; video.preload = 'auto'; video.poster = item.src; video.src = item.clip;
       media.appendChild(video);
       var started = false, begin = function () { if (started || !state || state.i !== i) return; started = true; run(bar, Math.max(3000, (item.seconds || 4) * 1000)); };
       video.addEventListener('playing', begin);
-      video.play().catch(begin);
+      // If the browser refuses to start with sound, carry on silently and show sound as off.
+      video.play().catch(function () { setSound(false); return video.play(); }).catch(begin);
       setTimeout(begin, 2500);
     } else {
       run(bar, stillMs);
@@ -100,6 +112,8 @@
       state = { items: options.items, title: options.title, i: 0, onClose: options.onClose };
       dialog.querySelector('.vp-who b').textContent = '@luke · ' + options.title;
       dialog.querySelector('.vp-bars').innerHTML = options.items.map(function () { return '<i><b></b></i>'; }).join('');
+      dialog.querySelector('.vp-sound').hidden = !options.items.some(function (item) { return item.clip; });
+      setSound(true);
       dialog.showModal();
       go(options.start || 0);
     }

@@ -16,6 +16,9 @@
 .vp-who span{font-size:12px;opacity:.9}
 .vp-close{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:#fff}
 .vp-close svg{width:20px;height:20px}
+.vp-sound{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:#fff}
+.vp-sound svg{width:22px;height:22px}
+.vp-sound[aria-pressed="true"] .off,.vp-sound[aria-pressed="false"] .on{display:none}
 .vp-prev,.vp-next{position:absolute;z-index:2;top:80px;bottom:0}
 .vp-prev{left:0;width:34%}
 .vp-next{right:0;width:66%}
