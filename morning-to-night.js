@@ -73,18 +73,34 @@
     dusk.style.setProperty('--fall', (box.height - 120) + 'px');
     if (!calm) dusk.style.setProperty('--set', Math.max(0, Math.min(1, progress)).toFixed(3));
   }
+  // The walk strip holds six posts side by side, so they all sit at the same height on the page.
+  // As the strip passes up the screen the timeline steps through them one at a time, and the strip
+  // slides sideways to keep the current one in view. Scrolling the strip by hand also moves the dot.
+  var filmEntries = entries.filter(function (entry) { return entry.closest('.film'); });
+  var filmFirst = entries.indexOf(filmEntries[0]), filmIndex = 0, filmStep = -1, sliding = 0;
+  function stripLeft(entry) {
+    return film.scrollLeft + entry.getBoundingClientRect().left - film.getBoundingClientRect().left - parseFloat(getComputedStyle(film).paddingLeft);
+  }
+  function slideTo(k) {
+    sliding = Date.now() + 700;
+    film.scrollTo({ left: stripLeft(filmEntries[k]), behavior: calm ? 'auto' : 'smooth' });
+  }
+  // Where the strip's middle is on screen decides the step: step 0 as it comes up past 78% of the
+  // screen height, the last step by the time it reaches 24%.
+  function stepAt(centre) {
+    var progress = (window.innerHeight * 0.78 - centre) / (window.innerHeight * 0.54);
+    return Math.max(0, Math.min(filmEntries.length - 1, Math.floor(progress * filmEntries.length)));
+  }
   function update() {
     queued = false;
     setSun();
-    // The current post is the one nearest the middle of the screen. In the film strip, which
-    // scrolls sideways, only the first post that is at least half in view can be current.
-    var middle = (window.innerHeight + bar.offsetHeight) / 2, i = 0, best = Infinity, filmLead = null;
+    var middle = (window.innerHeight + bar.offsetHeight) / 2, i = 0, best = Infinity;
+    var filmBox = film.getBoundingClientRect(), step = stepAt(filmBox.top + filmBox.height / 2);
+    if (step !== filmStep) { var first = filmStep < 0; filmStep = step; filmIndex = step; if (!first) slideTo(step); }
     entries.forEach(function (entry, n) {
-      var box = entry.getBoundingClientRect();
-      if (entry.closest('.film')) {
-        if (filmLead !== null || box.left + box.width / 2 < 0) return;
-        filmLead = n;
-      }
+      var inFilm = n >= filmFirst && n < filmFirst + filmEntries.length;
+      if (inFilm && n !== filmFirst + filmIndex) return;
+      var box = inFilm ? filmBox : entry.getBoundingClientRect();
       var distance = Math.abs(box.top + box.height / 2 - middle);
       if (distance < best) { best = distance; i = n; }
     });
@@ -97,7 +113,14 @@
   function queue() { if (!queued) { queued = true; requestAnimationFrame(update); } }
   window.addEventListener('scroll', queue, { passive: true });
   window.addEventListener('resize', queue);
-  film.addEventListener('scroll', queue, { passive: true });
+  film.addEventListener('scroll', function () {
+    if (Date.now() < sliding) return; // our own slide, not the visitor's
+    // Scrolled by hand: the current post is the one nearest the strip's left edge, or the last one at the far end.
+    var atEnd = film.scrollLeft >= film.scrollWidth - film.clientWidth - 2, nearest = Infinity;
+    filmEntries.forEach(function (entry, k) { var d = Math.abs(stripLeft(entry) - film.scrollLeft); if (d < nearest) { nearest = d; filmIndex = k; } });
+    if (atEnd) filmIndex = filmEntries.length - 1;
+    queue();
+  }, { passive: true });
   // Posts a few minutes apart have ticks that overlap, so a click goes to the tick nearest the pointer.
   line.addEventListener('click', function (e) {
     var n = ticks.indexOf(e.target.closest('.tick'));
@@ -110,9 +133,17 @@
     }
     if (n < 0) return;
     e.preventDefault();
-    // Centre the post in the space under the day bar; in the film strip, also slide it into view.
-    var entry = entries[n], strip = entry.closest('.film'), behavior = calm ? 'auto' : 'smooth', box = entry.getBoundingClientRect();
-    if (strip) strip.scrollTo({ left: strip.scrollLeft + box.left - strip.getBoundingClientRect().left - parseFloat(getComputedStyle(strip).paddingLeft), behavior: behavior });
+    var behavior = calm ? 'auto' : 'smooth', k = n - filmFirst;
+    if (k >= 0 && k < filmEntries.length) {
+      // A post in the walk strip: scroll to the height where the timeline is on that post's step, and slide to it.
+      var strip = film.getBoundingClientRect(), centre = window.innerHeight * (0.78 - 0.54 * (k + 0.5) / filmEntries.length);
+      filmStep = k; filmIndex = k; slideTo(k);
+      window.scrollTo({ top: window.scrollY + strip.top + strip.height / 2 - centre, behavior: behavior });
+      queue();
+      return;
+    }
+    // Any other post: centre it in the space under the day bar.
+    var box = entries[n].getBoundingClientRect();
     window.scrollTo({ top: window.scrollY + box.top + box.height / 2 - (window.innerHeight + bar.offsetHeight) / 2, behavior: behavior });
   });
   update();
