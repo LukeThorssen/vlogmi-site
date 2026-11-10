@@ -92,6 +92,7 @@
     var progress = (window.innerHeight * 0.78 - centre) / (window.innerHeight * 0.54);
     return Math.max(0, Math.min(filmEntries.length - 1, Math.floor(progress * filmEntries.length)));
   }
+  function topZone() { return Math.min(110, window.innerHeight * 0.12); }
   function update() {
     queued = false;
     setSun();
@@ -105,6 +106,9 @@
       var distance = Math.abs(box.top + box.height / 2 - middle);
       if (distance < best) { best = distance; i = n; }
     });
+    // The first two posts share the top of the page, and the taller one would otherwise never be
+    // "nearest". So the very top of the page is always the first post; a short scroll moves to the second.
+    if (i <= 1) i = window.scrollY < topZone() ? 0 : 1;
     if (i === current) return;
     current = i;
     if (i >= filmFirst && i < filmFirst + filmEntries.length) countUp(i);
@@ -144,9 +148,12 @@
       queue();
       return;
     }
-    // Any other post: centre it in the space under the day bar.
-    var box = entries[n].getBoundingClientRect();
-    window.scrollTo({ top: window.scrollY + box.top + box.height / 2 - (window.innerHeight + bar.offsetHeight) / 2, behavior: behavior });
+    // Any other post: centre it in the space under the day bar. The first post is the top of the
+    // page, and the second sits just past the short stretch that belongs to the first.
+    var box = entries[n].getBoundingClientRect(), top = window.scrollY + box.top + box.height / 2 - (window.innerHeight + bar.offsetHeight) / 2;
+    if (n === 0) top = 0;
+    if (n === 1) top = Math.max(top, topZone() + 12);
+    window.scrollTo({ top: top, behavior: behavior });
   });
   update();
 
