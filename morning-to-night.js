@@ -63,19 +63,22 @@
   var entries = [].slice.call(document.querySelectorAll('.entry')), segs = [].slice.call(document.querySelectorAll('.seg'));
   var now = document.getElementById('now'), thumb = document.getElementById('dl-thumb'), emoji = document.getElementById('dl-emoji');
   var play = dayline.querySelector('.dl-play'), peek = document.getElementById('dl-peek');
-  var night = document.getElementById('night'), how = document.getElementById('how');
+  var night = document.getElementById('night'), how = document.getElementById('how'), nightEnd = night.querySelector('.aside');
   var current = 0, queued = false;
   // Sunset: how far the sun has set follows how far the sunset section has scrolled past.
-  var dusk = document.querySelector('.dusk');
+  var dusk = document.querySelector('.dusk'), land = dusk.querySelector('.land');
   function setSun() {
     var box = dusk.getBoundingClientRect(), progress = (window.innerHeight * 0.85 - box.top) / box.height;
     dusk.style.setProperty('--fall', (box.height - 120) + 'px');
     if (!calm) dusk.style.setProperty('--set', Math.max(0, Math.min(1, progress)).toFixed(3));
   }
   function headHeight() { return head.offsetHeight; }
-  // The first two posts share the top of the page, so the very top belongs to the first post and a
-  // short scroll moves on to the second.
+  // The very top of the page always belongs to the first post, even on a tall monitor where the
+  // second one sits nearer the middle.
   function topZone() { return Math.min(110, window.innerHeight * 0.12); }
+  // Where the eye rests: a little above the middle of the space under the header. The current post
+  // is the one nearest this line, and jumping to a post puts it here.
+  function focusLine() { var top = headHeight(); return top + (window.innerHeight - top) * 0.42; }
   function show(i) {
     current = i;
     now.textContent = posts[i].time;
@@ -97,18 +100,24 @@
     setSun();
     var y = window.scrollY, h = window.innerHeight, nightTop = night.getBoundingClientRect().top, howTop = how.getBoundingClientRect().top;
     head.classList.toggle('is-scrolled', y > 8);
-    head.classList.toggle('is-dark', nightTop < headHeight());
-    // The timeline belongs to the day: it appears after a first small scroll and slides away once
-    // How it works begins.
-    dayline.classList.toggle('is-on', y > 40 && howTop > h * 0.55);
+    // The header turns dark as soon as the dark land of the sunset reaches it, not at the night section.
+    var darkTop = Math.min(nightTop, land.getBoundingClientRect().top + land.offsetHeight * 0.12);
+    head.classList.toggle('is-dark', darkTop < headHeight());
+    // The timeline belongs to the day: it appears after a first small scroll and slides away once the
+    // last post has passed, before "That was Sunday" and How it works.
+    // Where "That was Sunday" sits under the posts (phones and tablets), it also leaves as those words arrive.
+    var lastBottom = entries[entries.length - 1].getBoundingClientRect().bottom, endTop = nightEnd.getBoundingClientRect().top;
+    var wordsArrived = endTop > lastBottom - 1 && endTop < h - 110, ended = wordsArrived || lastBottom < headHeight() + (h - headHeight()) * 0.3;
+    dayline.classList.toggle('is-on', y > 40 && !ended && howTop > h * 0.55);
     dayline.classList.toggle('is-dark', nightTop < h - 50);
-    // The current post is the one nearest the middle of the space under the header.
-    var middle = (h + headHeight()) / 2, i = 0, best = Infinity;
+    var middle = focusLine(), i = 0, best = Infinity;
     entries.forEach(function (entry, n) {
       var box = entry.getBoundingClientRect(), distance = Math.abs(box.top + box.height / 2 - middle);
       if (distance < best) { best = distance; i = n; }
     });
-    if (i <= 1) i = y < topZone() ? 0 : 1;
+    if (y < topZone()) i = 0;
+    // By the time the closing words arrive, the day's last post is the latest thing on screen.
+    if (wordsArrived) i = entries.length - 1;
     if (i !== current) show(i);
   }
   function queue() { if (!queued) { queued = true; requestAnimationFrame(update); } }
@@ -116,7 +125,7 @@
   window.addEventListener('resize', queue);
 
   function scrollToPost(n) {
-    var box = entries[n].getBoundingClientRect(), top = window.scrollY + box.top + box.height / 2 - (window.innerHeight + headHeight()) / 2;
+    var box = entries[n].getBoundingClientRect(), top = window.scrollY + box.top + box.height / 2 - focusLine();
     if (n === 0) top = 0;
     if (n === 1) top = Math.max(top, topZone() + 12);
     window.scrollTo({ top: top, behavior: calm ? 'auto' : 'smooth' });
@@ -144,7 +153,8 @@
   function countUp(n, wait) {
     if (calm || counted[n]) return;
     counted[n] = true;
-    var to = posts[n].minutes, from = n ? posts[n - 1].minutes : to - 31;
+    // Start a minute after the previous post, so the same time is never on screen twice.
+    var to = posts[n].minutes, from = n ? Math.min(posts[n - 1].minutes + 1, to) : to - 31;
     var clock = entries[n].querySelector('.clock'), mer = entries[n].querySelector('.mer');
     var length = Math.min(1100, 420 + (to - from) * 2.2), began = null;
     clock.textContent = face(from)[0]; mer.textContent = face(from)[1];

@@ -103,8 +103,8 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .trail img{width:44px;height:auto}
 .trail img:nth-child(odd){rotate:-8deg}
 .trail img:nth-child(even){rotate:9deg;translate:0 -6px}
-@media (min-width:1240px){
-  /* On wide screens the reactions scatter around the words: above, below and beside them. */
+@media (min-width:1021px){
+  /* Beside the post, the reactions scatter around the words: above, below and beside them. */
   .after .row{position:relative}
   .trail{position:absolute;inset:-56px 388px -56px 0;display:block;margin:0;pointer-events:none}
   .trail img{position:absolute;pointer-events:auto;translate:none}
@@ -166,9 +166,9 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 
 .night{background:var(--night);color:#fff;padding-top:64px;padding-bottom:120px}
 .night::before{content:"";position:absolute;inset:0 0 auto 0;height:420px;pointer-events:none;opacity:.7;background-image:radial-gradient(circle,#fff 0 1px,transparent 1.6px),radial-gradient(circle,#fff 0 1px,transparent 1.6px),radial-gradient(circle,#C9CCFF 0 1.4px,transparent 2px);background-size:233px 187px,317px 251px,409px 331px;background-position:40px 30px,150px 110px,260px 60px;-webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent);mask-image:linear-gradient(to bottom,#000 30%,transparent)}
-.night .row{align-items:flex-end}
-.night .entry:nth-child(1){--w:240px;--clock:92px;margin-bottom:96px}
-.night .entry:nth-child(2){--w:330px;--clock:132px;margin-left:-20px}
+.night .row{align-items:flex-start}
+.night .entry:nth-child(1){--w:240px;--clock:92px}
+.night .entry:nth-child(2){--w:330px;--clock:132px;margin-left:-20px;margin-top:120px}
 .night .aside{align-self:center;max-width:480px;padding-left:24px}
 .night .aside h2{font-size:clamp(44px,5.2vw,76px)}
 .night .aside p{color:var(--night-muted)}
@@ -180,10 +180,10 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .how-say{display:grid;gap:14px;font-size:19px;line-height:1.55;color:#D4D4D7;padding-bottom:8px}
 .versus{margin:64px 0 0;border-top:1px solid rgba(255,255,255,.18)}
 .versus>div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,1.2fr);gap:32px;padding:22px 0;border-bottom:1px solid var(--night-line);align-items:center}
-.versus-head span{font-weight:600;font-size:13px;color:var(--night-muted)}
+.versus-head span{font-weight:600;font-size:14px;color:#C4C5CB}
 .versus-head span:last-child{color:#fff}
 .versus dt{font-weight:600;font-size:17px;color:#fff}
-.versus dd{margin:0;font-size:18px;color:var(--night-muted)}
+.versus dd{margin:0;font-size:18px;color:#B9BAC1}
 .versus dd.us{display:flex;align-items:center;gap:12px;color:#fff;font-weight:600}
 .versus dd.us .dot{width:12px;height:12px}
 
@@ -255,7 +255,7 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .foot{background:var(--night);color:var(--night-muted);border-top:1px solid var(--night-line)}
 .foot nav,.foot .other a{color:#fff}
 .foot .logo{width:84px}
-.foot .legal{flex-basis:100%;font-size:13px;color:#6E6F76}
+.foot .legal{flex-basis:100%;font-size:13px;color:var(--night-muted)}
 
 .toast{position:fixed;z-index:40;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);margin:0;padding:14px 22px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:15px;box-shadow:var(--shadow-float);white-space:nowrap}
 
@@ -277,12 +277,27 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .aside h2,.aside p{max-width:560px}
   .night .aside{padding-left:0}
   .after .aside,.dusk .aside,.noon .aside{order:-1}
-  .chapter{padding:96px 0}
-  .dawn{padding-top:40px;padding-bottom:96px}
+  .chapter{padding:80px 0}
+  .dawn{padding-top:40px;padding-bottom:80px}
   .dusk{padding-top:130px;padding-bottom:270px}
   .night{padding-top:64px;padding-bottom:96px}
   .noon .entry:nth-child(2){margin-top:64px}
   .after .entry{margin-left:auto}
+  .after .row{display:grid;grid-template-columns:minmax(0,1fr) auto;row-gap:0}
+  .after .aside{display:contents}
+  .after .aside h2,.after .aside p{grid-column:1/-1}
+  .after .entry{grid-column:2;grid-row:3;margin:32px 0 0}
+  .trail{grid-column:1;grid-row:3;align-self:stretch;position:relative;display:block;margin:32px 0 0;pointer-events:none}
+  .trail img{position:absolute;translate:none;pointer-events:auto}
+  .trail img:nth-child(1){left:10%;top:88%;width:50px;rotate:-10deg}
+  .trail img:nth-child(2){left:52%;top:77%;width:44px;rotate:8deg}
+  .trail img:nth-child(3){left:18%;top:65%;width:54px;rotate:-6deg}
+  .trail img:nth-child(4){left:60%;top:53%;width:50px;rotate:10deg}
+  .trail img:nth-child(5){left:8%;top:42%;width:42px;rotate:-4deg}
+  .trail img:nth-child(6){left:50%;top:31%;width:46px;rotate:-9deg}
+  .trail img:nth-child(7){left:16%;top:19%;width:48px;rotate:7deg}
+  .trail img:nth-child(8){left:62%;top:10%;width:36px;rotate:14deg}
+  .trail img:nth-child(9){left:24%;top:0;width:42px;rotate:-7deg}
   .dusk .entry:nth-child(3){margin-top:150px}
   .dusk .aside{max-width:none}
   /* With the words on top, the sun sets on the right so it never sits behind them. */
@@ -304,17 +319,17 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   :root{--head:58px}
   .logo{width:88px}
   .site-head .cta{min-height:40px;padding:0 16px;font-size:14px}
-  .chapter{padding:80px 0}
-  .dawn{padding-top:28px;padding-bottom:80px}
-  .dusk{padding-top:120px;padding-bottom:230px}
-  .night{padding-top:56px;padding-bottom:80px}
+  .chapter{padding:56px 0}
+  .dawn{padding-top:28px;padding-bottom:56px}
+  .dusk{padding-top:96px;padding-bottom:200px}
+  .night{padding-top:48px;padding-bottom:64px}
   .land{height:150px;border-radius:50% 50% 0 0/36px 36px 0 0}
   .pin{right:-8px;bottom:-12px}
   .pitch h1{font-size:60px}
   .lede{font-size:18px}
   .duo{gap:14px;width:100%}
   .duo .entry:first-child{--w:56%;--clock:84px}
-  .duo .entry:last-child{--w:40%;--clock:58px;margin-top:96px}
+  .duo .entry:last-child{--w:40%;--clock:58px;margin-top:136px}
   .walk-grid{--step:120px;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 14px;padding-bottom:var(--step)}
   .walk-grid .entry:nth-child(3n+2),.walk-grid .entry:nth-child(3n){translate:none}
   .walk-grid .entry:nth-child(even){translate:0 var(--step)}
@@ -322,22 +337,23 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .row{gap:28px 12px}
   .noon .entry{--w:calc(50% - 6px);--clock:58px}
   .noon .entry:nth-child(2){margin:64px 0 0}
-  .after .entry{--w:74%;--clock:92px;margin-left:auto}
+  .after .row{grid-template-columns:minmax(0,26%) minmax(0,1fr)}
+  .after .entry{--w:100%;--clock:92px}
   .dusk .entry:nth-child(2){--w:56%;--clock:78px}
   .dusk .entry:nth-child(3){--w:calc(44% - 12px);--clock:58px;margin:110px 0 0}
-  .night .entry:nth-child(1){--w:calc(42% - 12px);--clock:54px;margin-bottom:56px}
-  .night .entry:nth-child(2){--w:58%;--clock:80px;margin-left:0}
+  .night .entry:nth-child(1){--w:calc(42% - 12px);--clock:54px}
+  .night .entry:nth-child(2){--w:58%;--clock:80px;margin:88px 0 0}
   .aside h2,.walk-text h2{font-size:38px}
   .aside .bunch,.walk-text .bunch{--e:48px;margin:0 0 12px}
   .dusk .aside h2{font-size:38px}
   .night .aside h2{font-size:44px}
   .aside p,.walk-text p{font-size:17px}
-  .how{padding-top:72px}
+  .how{padding-top:64px}
   .how-say{font-size:17px}
   .versus>div{grid-template-columns:1fr 1fr;gap:6px 16px;padding:18px 0}
   .versus dt{grid-column:1/-1}
   .versus-head span:first-child{display:none}
-  .versus dd{font-size:15px}
+  .versus dd{font-size:16px}
   .steps{gap:80px;margin-top:88px}
   .step-text p{font-size:17px}
   .demo{justify-self:center}
@@ -345,7 +361,7 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .cal-peek{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center}
   .cal-peek img{border-radius:12px}
   .cal-peek figcaption{margin-top:0}
-  .closing{padding:104px 0 96px}
+  .closing{padding:88px 0 80px}
   .closing h2{font-size:52px}
   .dayline{gap:10px;padding:6px;width:calc(100vw - 24px)}
   .dl-thumb,.dl-play{width:38px;height:38px}
