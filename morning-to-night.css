@@ -39,6 +39,9 @@ p{text-wrap:pretty}
 .head-link{opacity:.72;transition:opacity .2s}
 .head-link:hover{opacity:1}
 .is-dark .cta{background:#fff;color:var(--ink)}
+/* Until the app is listed, the header says so instead of offering a download. */
+.soon{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;white-space:nowrap}
+.soon::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--dot)}
 
 /* The day timeline: a floating capsule, like a mini player. One story bar per post, as in the app. */
 .dayline{position:fixed;z-index:25;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:14px;max-width:calc(100vw - 24px);padding:7px 7px 7px 7px;border-radius:999px;background:rgba(255,255,255,.82);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:var(--shadow-float),inset 0 0 0 1px rgba(16,17,18,.06);color:var(--ink);transform:translate(-50%,calc(100% + 48px));opacity:0;pointer-events:none;transition:transform .55s var(--spring),opacity .3s,background-color .35s,color .35s}
@@ -88,6 +91,16 @@ p{text-wrap:pretty}
 .frame .like{position:absolute;z-index:3;width:84px;height:84px;aspect-ratio:auto;object-fit:contain;margin:-42px 0 0 -42px;transition:none;pointer-events:none;animation:like .85s ease-out forwards;filter:drop-shadow(0 6px 14px rgba(16,17,18,.3))}
 @keyframes like{0%{transform:scale(.2) rotate(-14deg);opacity:0}22%{transform:scale(1.25) rotate(-8deg);opacity:1}40%{transform:scale(1) rotate(-8deg)}75%{opacity:1}100%{transform:translateY(-46px) scale(1.05) rotate(-8deg);opacity:0}}
 
+/* Each part of the day is labelled with its real times, in the same style as the date at the top. */
+.daypart{display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.daypart::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:var(--dot)}
+.daypart b{font-weight:700;color:var(--ink)}
+.daypart span::before{content:"·";margin-right:10px}
+.dusk .daypart{color:var(--ink-2)}
+.dusk .daypart::before{box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.night .daypart{color:var(--night-muted)}
+.night .daypart b{color:#fff}
+
 /* Emoji: one shadow, one spring. Rotation is its own property so the hover never resets it. */
 .pin,.bunch img,.trail img{filter:var(--emoji-shadow);transition:scale .45s var(--spring)}
 .pin:hover,.bunch img:hover,.trail img:hover{scale:1.22}
@@ -103,20 +116,26 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .trail img{width:44px;height:auto}
 .trail img:nth-child(odd){rotate:-8deg}
 .trail img:nth-child(even){rotate:9deg;translate:0 -6px}
+/* Reactions rise from the post like they are arriving, fainter as they go up. */
+.trail img:nth-child(5){opacity:.9}
+.trail img:nth-child(6){opacity:.8}
+.trail img:nth-child(7){opacity:.7}
+.trail img:nth-child(8){opacity:.55}
+.trail img:nth-child(9){opacity:.4}
 @media (min-width:1021px){
-  /* Beside the post, the reactions scatter around the words: above, below and beside them. */
+  /* A column of reactions rising beside the 4:58 post, starting at its lower corner. */
   .after .row{position:relative}
-  .trail{position:absolute;inset:-56px 388px -56px 0;display:block;margin:0;pointer-events:none}
+  .trail{position:absolute;top:-24px;bottom:0;right:calc(364px + var(--gutter));width:150px;display:block;margin:0;pointer-events:none}
   .trail img{position:absolute;pointer-events:auto;translate:none}
-  .trail img:nth-child(1){left:5%;top:15%;width:50px;rotate:-14deg}
-  .trail img:nth-child(2){left:31%;top:-2%;width:78px;rotate:7deg}
-  .trail img:nth-child(3){left:63%;top:21%;width:56px;rotate:-6deg}
-  .trail img:nth-child(4){left:74%;top:46%;width:88px;rotate:10deg}
-  .trail img:nth-child(5){left:95%;top:4%;width:48px;rotate:-4deg}
-  .trail img:nth-child(6){left:58%;top:63%;width:58px;rotate:-11deg}
-  .trail img:nth-child(7){left:15%;top:69%;width:72px;rotate:8deg}
-  .trail img:nth-child(8){left:80%;top:86%;width:44px;rotate:16deg}
-  .trail img:nth-child(9){left:41%;top:93%;width:78px;rotate:-7deg}
+  .trail img:nth-child(1){left:58%;top:90%;width:60px;rotate:-10deg}
+  .trail img:nth-child(2){left:18%;top:80%;width:52px;rotate:8deg}
+  .trail img:nth-child(3){left:54%;top:69%;width:56px;rotate:-6deg}
+  .trail img:nth-child(4){left:12%;top:58%;width:52px;rotate:10deg}
+  .trail img:nth-child(5){left:50%;top:47%;width:46px;rotate:-4deg}
+  .trail img:nth-child(6){left:20%;top:36%;width:44px;rotate:-9deg}
+  .trail img:nth-child(7){left:56%;top:25%;width:40px;rotate:7deg}
+  .trail img:nth-child(8){left:26%;top:14%;width:34px;rotate:14deg}
+  .trail img:nth-child(9){left:52%;top:4%;width:30px;rotate:-7deg}
 }
 
 /* Chapters. Daytime is all one canvas; the sky only changes at sunset. */
@@ -188,9 +207,10 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .versus dd.us .dot{width:12px;height:12px}
 
 .steps{display:grid;gap:128px;margin-top:136px}
-.step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:72px;align-items:center}
-.step-n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
-.step h3{margin-top:20px;font-size:clamp(30px,3.2vw,46px)}
+.step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:72px;align-items:start}
+/* The words start level with the top of the demo and stay in view while it scrolls past. */
+.step-text{position:sticky;top:calc(var(--head) + 72px);padding-top:32px}
+.step h3{font-size:clamp(30px,3.2vw,46px)}
 .step-text p{margin-top:14px;font-size:19px;line-height:1.55;color:var(--night-muted);max-width:24em}
 .demo{position:relative;justify-self:center;border-radius:var(--r-card);background:var(--night-2);box-shadow:0 30px 60px -30px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.07);overflow:hidden;isolation:isolate}
 
@@ -252,12 +272,11 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .closing{background:var(--night);color:#fff;padding:152px 0 136px}
 .closing h2{font-size:clamp(48px,7vw,104px);letter-spacing:-.05em;max-width:9em}
 .closing .acts{margin-top:40px}
+.soon-note{margin-top:18px;font-weight:500;font-size:15px;color:var(--night-muted)}
 .foot{background:var(--night);color:var(--night-muted);border-top:1px solid var(--night-line)}
 .foot nav,.foot .other a{color:#fff}
 .foot .logo{width:84px}
 .foot .legal{flex-basis:100%;font-size:13px;color:var(--night-muted)}
-
-.toast{position:fixed;z-index:40;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);margin:0;padding:14px 22px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:15px;box-shadow:var(--shadow-float);white-space:nowrap}
 
 /* Between laptop and wide desktop: the walk drops to two columns beside its words. */
 @media (max-width:1239px){
@@ -285,9 +304,10 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .after .entry{margin-left:auto}
   .after .row{display:grid;grid-template-columns:minmax(0,1fr) auto;row-gap:0}
   .after .aside{display:contents}
+  /* Rows: the part-of-day label (when emoji piles are off), the heading, the paragraph, then the post with its reactions. Without the label, row 3 is simply empty (no row gap). */
   .after .aside h2,.after .aside p{grid-column:1/-1}
-  .after .entry{grid-column:2;grid-row:3;margin:32px 0 0}
-  .trail{grid-column:1;grid-row:3;align-self:stretch;position:relative;display:block;margin:32px 0 0;pointer-events:none}
+  .after .entry{grid-column:2;grid-row:4;margin:32px 0 0}
+  .trail{grid-column:1;grid-row:4;align-self:stretch;position:relative;display:block;margin:32px 0 0;pointer-events:none}
   .trail img{position:absolute;translate:none;pointer-events:auto}
   .trail img:nth-child(1){left:10%;top:88%;width:50px;rotate:-10deg}
   .trail img:nth-child(2){left:52%;top:77%;width:44px;rotate:8deg}
@@ -312,6 +332,7 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .how-top{grid-template-columns:1fr;gap:24px}
   .steps{gap:96px;margin-top:104px}
   .step{grid-template-columns:1fr;gap:36px}
+  .step-text{position:static;padding-top:0}
   .demo{justify-self:start}
   .head-link{display:none}
 }
@@ -339,6 +360,7 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .noon .entry:nth-child(2){margin:64px 0 0}
   .after .row{grid-template-columns:minmax(0,26%) minmax(0,1fr)}
   .after .entry{--w:100%;--clock:92px}
+  .trail img:nth-child(4){left:48%}
   .dusk .entry:nth-child(2){--w:56%;--clock:78px}
   .dusk .entry:nth-child(3){--w:calc(44% - 12px);--clock:58px;margin:110px 0 0}
   .night .entry:nth-child(1){--w:calc(42% - 12px);--clock:54px}
@@ -370,7 +392,10 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .dl-day{display:none}
   .dl-bars{flex:1;width:auto;gap:2px}
   .dl-emoji{width:26px;height:26px}
-  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .soon{font-size:14px}
+}
+@media (max-width:520px){
+  .soon-where{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   .dayline{transition:opacity .2s}

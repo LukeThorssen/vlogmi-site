@@ -1,6 +1,7 @@
-// Morning to Night: clips play as they come into view, the floating timeline follows along, the
-// clock times count up, any post opens the day player from that point, and How it works has three
-// small working pieces of the app (camera, mini vlog, calendar).
+// Morning to Night: clips play as they come into view, the floating timeline follows along, any post
+// opens the day player from that point, and How it works has three small working pieces of the app
+// (camera, mini vlog, calendar). The clock times are plain text: they used to count up, which showed
+// wrong times mid-count (removed November 14).
 (function () {
   var data = JSON.parse(document.getElementById('data').textContent), posts = data.posts, root = data.root;
   var items = posts.map(function (p) { return { src: root + p.src, clip: p.clip ? root + p.clip : '', time: p.time, len: p.len || '', seconds: p.seconds }; });
@@ -39,15 +40,7 @@
     frame.appendChild(heart);
     if (calm) setTimeout(function () { heart.remove(); }, 900);
   }
-  var toast = document.getElementById('toast'), toastTimer;
   document.addEventListener('click', function (e) {
-    var store = e.target.closest('[data-store]');
-    if (store) {
-      // Until the app is in the App Store there is nowhere to send people, so say so.
-      if (data.store) { window.location.href = data.store; return; }
-      toast.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { toast.hidden = true; }, 2800);
-      return;
-    }
     var button = e.target.closest('[data-play]');
     if (!button) return;
     var start = Number(button.dataset.play);
@@ -93,7 +86,6 @@
       seg.classList.toggle('is-now', n === i);
       if (n === i) seg.setAttribute('aria-current', 'true'); else seg.removeAttribute('aria-current');
     });
-    countUp(i);
   }
   function update() {
     queued = false;
@@ -143,44 +135,6 @@
     seg.addEventListener('blur', function () { peek.classList.remove('is-on'); });
   });
   dayline.addEventListener('pointerleave', function () { peek.classList.remove('is-on'); });
-
-  // ---------- Clock times count up ----------
-  // Each post's big time counts up from the previous post's time, like a clock running forward to
-  // that moment. It happens when the time reaches the middle band of the screen, so on a tall monitor
-  // they go one after another as you scroll. Once per post; skipped with reduced motion.
-  var counted = {};
-  function face(minutes) { var h = Math.floor(minutes / 60), m = Math.round(minutes % 60); if (m === 60) { h += 1; m = 0; } return [((h + 11) % 12 + 1) + ':' + (m < 10 ? '0' : '') + m, h % 24 < 12 ? 'am' : 'pm']; }
-  function countUp(n, wait) {
-    if (calm || counted[n]) return;
-    counted[n] = true;
-    // Start a minute after the previous post, so the same time is never on screen twice.
-    var to = posts[n].minutes, from = n ? Math.min(posts[n - 1].minutes + 1, to) : to - 31;
-    var clock = entries[n].querySelector('.clock'), mer = entries[n].querySelector('.mer');
-    var length = Math.min(1100, 420 + (to - from) * 2.2), began = null;
-    clock.textContent = face(from)[0]; mer.textContent = face(from)[1];
-    var tick = function (t) {
-      if (began === null) began = t;
-      var p = Math.min(1, (t - began) / length), eased = 1 - Math.pow(1 - p, 3), shown = face(from + (to - from) * eased);
-      clock.textContent = p === 1 ? posts[n].clock : shown[0];
-      mer.textContent = p === 1 ? posts[n].mer : shown[1];
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    setTimeout(function () { requestAnimationFrame(tick); }, wait || 0);
-  }
-  var counting = !calm && inView(function (seen) {
-    seen.forEach(function (item) {
-      if (!item.isIntersecting) return;
-      counting.unobserve(item.target);
-      var entry = item.target.closest('.entry'), previous = entry.previousElementSibling;
-      // Two posts side by side start a beat apart.
-      countUp(entries.indexOf(entry), previous && previous.classList.contains('entry') ? 160 : 0);
-    });
-  }, { rootMargin: '-18% 0px -38% 0px', threshold: 0.5 });
-  if (counting) {
-    entries.forEach(function (entry) { counting.observe(entry.querySelector('.time')); });
-    // The first two are on screen when the page opens, wherever they sit on a very tall monitor.
-    countUp(0); countUp(1, 160);
-  }
 
   // ---------- Step 1: the camera ----------
   var cam = document.getElementById('cam'), camVideo = cam.querySelector('video'), camNote = document.getElementById('cam-note');
