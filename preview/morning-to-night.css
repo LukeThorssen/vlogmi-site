@@ -154,6 +154,7 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
 .pitch h1{margin-top:20px;font-size:clamp(56px,6.9vw,100px);line-height:.95;letter-spacing:-.05em}
 .lede{margin-top:28px;font-size:20px;line-height:1.5;color:var(--ink-2);max-width:26em}
 .acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.hint{margin-top:18px;font-size:14px;color:var(--muted)}
 .duo{display:flex;align-items:flex-start;gap:28px}
 .duo .entry:first-child{--w:330px;--clock:144px}
 .duo .entry:last-child{--w:236px;--clock:92px;margin-top:150px}
