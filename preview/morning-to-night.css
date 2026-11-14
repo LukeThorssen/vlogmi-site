@@ -303,7 +303,7 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   .after .entry{margin-left:auto}
   .after .row{display:grid;grid-template-columns:minmax(0,1fr) auto;row-gap:0}
   .after .aside{display:contents}
-  /* Rows: the part-of-day label, the heading, the paragraph, then the post with its reactions. */
+  /* Rows: the part-of-day label (when emoji piles are off), the heading, the paragraph, then the post with its reactions. Without the label, row 3 is simply empty (no row gap). */
   .after .aside h2,.after .aside p{grid-column:1/-1}
   .after .entry{grid-column:2;grid-row:4;margin:32px 0 0}
   .trail{grid-column:1;grid-row:4;align-self:stretch;position:relative;display:block;margin:32px 0 0;pointer-events:none}
