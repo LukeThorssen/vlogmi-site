@@ -22,6 +22,17 @@ p{text-wrap:pretty}
 .cta.line{box-shadow:inset 0 0 0 1.5px currentColor}
 .play{display:inline-block;flex:none;width:0;height:0;border-style:solid;border-width:6.5px 0 6.5px 10px;border-color:transparent transparent transparent currentColor}
 .cta .play{margin-left:-2px}
+/* Download buttons: an arrow that nudges down on hover, and on the big ones a sun-yellow "Out now" sticker
+   that pops on when the button first comes into view (page.js) and wiggles on hover. */
+.cta.get{position:relative}
+.acts:has(.get-tag){row-gap:20px} /* room for the sticker when the buttons stack */
+.get-arrow{width:18px;height:18px;flex:none;margin-left:-4px}
+.get:hover .get-arrow{animation:get-nudge .7s var(--ease)}
+@keyframes get-nudge{40%{transform:translateY(3px)}70%{transform:translateY(-1px)}}
+.get-tag{position:absolute;top:-11px;right:12px;padding:4px 8px 5px;border-radius:7px;background:#FFD86B;color:var(--ink);font-size:12px;font-weight:700;line-height:1;rotate:6deg;box-shadow:0 3px 8px -2px rgba(16,17,18,.28);pointer-events:none;transition:scale .5s var(--spring) .2s,rotate .45s var(--spring)}
+.get:hover .get-tag{rotate:-5deg;scale:1.08;transition-delay:0s}
+.pop-wait .get:not(.is-seen) .get-tag{scale:0}
+@media (prefers-reduced-motion:reduce){.get-tag{transition:none}.get:hover .get-arrow{animation:none}}
 :focus-visible{outline:2.5px solid var(--pink);outline-offset:3px;border-radius:12px}
 .vp .mono{font-family:"Montserrat",sans-serif;font-weight:600}
 
@@ -340,6 +351,8 @@ h1 .bunch{display:inline-flex;vertical-align:-.02em;--e:.5em;margin-left:.12em}
   :root{--head:58px}
   .logo{width:88px}
   .site-head .cta{min-height:40px;padding:0 16px;font-size:14px}
+  .site-head .get{gap:7px}
+  .site-head .get-arrow{width:16px;height:16px;margin-left:0}
   .chapter{padding:56px 0}
   .dawn{padding-top:28px;padding-bottom:56px}
   .dusk{padding-top:96px;padding-bottom:200px}

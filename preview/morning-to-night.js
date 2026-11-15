@@ -51,6 +51,15 @@
     pending = setTimeout(function () { pending = null; openPlayer(start); }, 280);
   });
 
+  // Download buttons: the "Out now" sticker pops on the first time its button is well into view.
+  var getWatch = !calm && inView(function (seen) {
+    seen.forEach(function (item) { if (item.isIntersecting) { item.target.classList.add('is-seen'); getWatch.unobserve(item.target); } });
+  }, { rootMargin: '0px 0px -12% 0px' });
+  if (getWatch) {
+    document.documentElement.classList.add('pop-wait');
+    [].slice.call(document.querySelectorAll('.get-tag')).forEach(function (tag) { getWatch.observe(tag.parentNode); });
+  }
+
   // ---------- Header and floating timeline ----------
   var head = document.getElementById('head'), dayline = document.getElementById('dayline');
   var entries = [].slice.call(document.querySelectorAll('.entry')), segs = [].slice.call(document.querySelectorAll('.seg'));
