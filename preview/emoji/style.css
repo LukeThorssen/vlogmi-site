@@ -1,0 +1,107 @@
+/* The emoji page (vlogmi.com/emoji/). The page itself is written by build-emoji.mjs from the app's catalog. */
+:root{
+  --line:rgba(16,17,18,.08);--sun:#FFD86B;
+  --emoji-shadow:drop-shadow(0 5px 8px rgba(16,17,18,.16));
+  --spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.2,.7,.2,1);
+}
+html{scroll-behavior:smooth}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.cta{transition:transform .2s var(--spring)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:scale(.96)}
+
+/* ---------- Headline ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:40px;align-items:center;padding-top:56px;padding-bottom:72px}
+.hero>*{grid-column:1}
+.hero h1{font-weight:800;font-size:clamp(52px,6.6vw,104px);line-height:.98;letter-spacing:-.035em}
+.label{display:inline-block;padding:.02em .16em .06em;border-radius:.14em;background:var(--sun);rotate:-3deg;transition:rotate .4s var(--spring)}
+.label.pop{animation:pop .5s var(--spring)}
+.lede{max-width:30ch;margin-top:28px;font-size:clamp(18px,1.7vw,22px);line-height:1.45;color:var(--secondary)}
+.acts{margin-top:32px}
+.trio{grid-column:2;grid-row:1/span 3;display:flex;align-items:flex-end}
+.trio img{width:clamp(96px,10vw,150px);filter:var(--emoji-shadow);animation:land .7s var(--spring) backwards}
+.trio img:nth-child(1){rotate:-10deg;margin-right:-6%}
+.trio img:nth-child(2){width:clamp(120px,13vw,196px);z-index:1;animation-delay:.08s}
+.trio img:nth-child(3){rotate:10deg;margin-left:-6%;animation-delay:.16s}
+@keyframes land{from{opacity:0;scale:.4;translate:0 40px}}
+@keyframes pop{40%{scale:1.18}}
+
+/* ---------- Search and kinds ---------- */
+.bar{position:sticky;top:0;z-index:20;background:rgba(250,249,247,.86);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);box-shadow:0 1px 0 var(--line)}
+.bar-in{display:flex;align-items:center;gap:20px;padding-top:12px;padding-bottom:12px}
+.find{flex:none;display:flex;align-items:center;gap:10px;width:280px;height:46px;padding:0 16px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--border);transition:box-shadow .2s}
+.find:focus-within{box-shadow:inset 0 0 0 2px var(--ink)}
+.find svg{flex:none;width:18px;height:18px;color:var(--secondary)}
+.find input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;font:inherit;font-size:16px;font-weight:600;color:var(--ink)}
+.find input::placeholder{color:var(--secondary);font-weight:500}
+.find input::-webkit-search-cancel-button{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer;background:var(--secondary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M6.5 6.5l7 7M13.5 6.5l-7 7'/%3E%3C/svg%3E") center/100% no-repeat}
+/* The row scrolls sideways when the kinds do not fit; its ends fade so a cut-off word reads as "more this way". */
+.chips{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:3px 18px;margin:-3px -18px -3px -8px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent)}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:none;padding:9px 15px;border-radius:999px;font-weight:600;font-size:15px;color:var(--secondary);white-space:nowrap;transition:background-color .2s,color .2s}
+.chips a:hover{color:var(--ink)}
+.chips a[aria-current]{background:var(--ink);color:#fff}
+.chips .chip-new:not([aria-current]){background:var(--sun);color:var(--ink)}
+
+/* ---------- The emoji ---------- */
+.sets{padding-top:8px;padding-bottom:40px;min-height:60vh}
+.cat{padding-top:48px;scroll-margin-top:62px}
+.cat h2{font-weight:800;font-size:28px;letter-spacing:-.02em}
+.cat h2 span{margin-left:6px;font-weight:600;font-size:16px;letter-spacing:0;color:var(--secondary)}
+.is-searching .cat h2 span{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:4px;margin:16px -14px 0}
+.e{display:grid;place-items:center;aspect-ratio:1;border-radius:22px;-webkit-tap-highlight-color:transparent;transition:background-color .2s}
+.e img{width:56px;height:56px;transition:scale .35s var(--spring),filter .2s;will-change:scale}
+.e:hover img,.e:focus-visible img{scale:1.32;filter:var(--emoji-shadow)}
+.e:active img{scale:.86;transition-duration:.08s}
+.e.is-on{background:#fff;box-shadow:inset 0 0 0 1.5px var(--border)}
+.e.is-on img{scale:1.18;filter:var(--emoji-shadow)}
+.none{padding:96px 0;text-align:center;font-size:20px;font-weight:600;color:var(--secondary)}
+
+/* ---------- Ending ---------- */
+.end{padding-top:96px;padding-bottom:120px;text-align:center}
+.end h2{font-weight:800;font-size:clamp(36px,5vw,64px);line-height:1.05;letter-spacing:-.03em}
+.end p{margin-top:14px;font-size:19px;color:var(--secondary)}
+.end .cta{margin-top:32px}
+.foot{border-top:1px solid var(--line);padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+
+/* ---------- Thrown copies and the opened emoji ---------- */
+.fx{position:fixed;inset:0;z-index:40;overflow:hidden;pointer-events:none}
+.fx img{position:absolute;max-width:none;will-change:transform,opacity}
+.dock{position:fixed;z-index:30;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:14px;width:max-content;max-width:calc(100vw - 24px);padding:9px 9px 9px 12px;border-radius:999px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);box-shadow:0 14px 44px rgba(16,17,18,.18),0 0 0 1px rgba(16,17,18,.06);translate:-50% calc(100% + 80px);visibility:hidden;transition:translate .5s var(--spring),visibility 0s .5s}
+.dock.is-on{translate:-50% 0;visibility:visible;transition:translate .5s var(--spring)}
+#dock-art{flex:none;width:92px;height:92px;margin:-40px 0 -4px;filter:var(--emoji-shadow)}
+#dock-art.pop{animation:pop .45s var(--spring)}
+.dock-name{min-width:0;margin-right:6px;font-weight:700;font-size:17px;line-height:1.2;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.dock .cta{min-width:92px}
+.dock-x{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--secondary);transition:background-color .2s,color .2s}
+.dock-x:hover{background:rgba(16,17,18,.06);color:var(--ink)}
+.dock-x svg{width:16px;height:16px}
+
+@media (max-width:900px){
+  .hero{padding-top:24px;padding-bottom:56px}
+  .hero{display:block}
+  .hero h1{font-size:clamp(52px,13vw,96px)}
+  .trio{justify-content:center;margin-bottom:28px}
+  .trio img{width:clamp(96px,26vw,170px)}
+  .trio img:nth-child(2){width:clamp(120px,33vw,216px)}
+  .bar-in{flex-direction:column;align-items:stretch;gap:10px;padding-top:10px;padding-bottom:10px}
+  .find{width:auto}
+  .chips{margin:-3px calc(var(--gutter) * -1);padding:3px var(--gutter);-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--gutter),#000 calc(100% - var(--gutter)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--gutter),#000 calc(100% - var(--gutter)),transparent)}
+  .cat{scroll-margin-top:112px}
+}
+@media (max-width:720px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:2px;margin:12px -8px 0}
+  .e{border-radius:18px}
+  .e img{width:44px;height:44px}
+  .cat{padding-top:36px}
+  .cat h2{font-size:24px}
+  .chips a{padding:8px 13px;font-size:14px}
+  .end{padding-top:72px;padding-bottom:96px}
+  .dock{gap:10px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  #dock-art{width:76px;height:76px;margin-top:-32px}
+  .dock-name{font-size:15px}
+  .dock .cta{min-width:80px;padding:0 16px}
+}
+@media (hover:none){.e:hover img{scale:1;filter:none}.e.is-on img{scale:1.18;filter:var(--emoji-shadow)}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.trio img,.label.pop,#dock-art.pop{animation:none}}
