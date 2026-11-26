@@ -28,6 +28,25 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .cta.small{min-height:44px;padding:0 20px;font-size:15px}
 .cta.line{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
 .cta.light{background:#fff;color:var(--ink)}
+/* Download the app: one pill that, when pressed, widens and splits into two equal pills, iPhone and
+   Android (get.js sets the widths). The label fades first, then the halves fade in as they spring a
+   few pixels apart, so labels and outlines never pile on top of each other. Escape, a tap elsewhere
+   or tabbing away puts it back. */
+.get{position:relative;display:inline-flex;flex:none;justify-content:center;vertical-align:middle;transition:width .42s cubic-bezier(.2,.7,.2,1)}
+.get .get-btn{transition:opacity .18s .1s,transform .3s cubic-bezier(.2,.7,.2,1) .1s,visibility 0s}
+.get-stores{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;visibility:hidden;transition:visibility 0s .2s}
+.get .get-store{min-width:0;overflow:hidden;opacity:0;transition:transform .25s cubic-bezier(.2,.7,.2,1),opacity .12s,background-color .2s,box-shadow .2s}
+.get .get-store:first-child{transform:translateX(6px) scale(.96)}
+.get .get-store:last-child{transform:translateX(-6px) scale(.96)}
+.get.is-open .get-btn{opacity:0;transform:scale(.96);visibility:hidden;pointer-events:none;transition:opacity .1s,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s .1s}
+.get.is-open .get-stores{visibility:visible;transition-delay:0s}
+.get.is-open .get-store{opacity:1;transform:none;transition:transform .55s cubic-bezier(.34,1.5,.64,1) .08s,opacity .22s .08s,background-color .2s,box-shadow .2s}
+.get.is-open .get-store:hover{transform:translateY(-1px);transition-delay:0s}
+.get.is-open .get-store:active{transform:scale(.97);transition-delay:0s}
+@media (prefers-reduced-motion:reduce){
+  .get,.get .get-store,.get .get-btn,.get.is-open .get-store{transition-property:opacity,visibility}
+  .get .get-store:first-child,.get .get-store:last-child,.get.is-open .get-btn{transform:none}
+}
 .cta .play{width:0;height:0;border-style:solid;border-width:7px 0 7px 11px;border-color:transparent transparent transparent currentColor}
 :focus-visible{outline:3px solid var(--pink);outline-offset:3px}
 .tag{position:absolute;left:10px;bottom:10px;padding:4px 8px;border-radius:8px;background:rgba(16,17,18,.62);color:#fff;font-size:11px;line-height:1.2;pointer-events:none}
